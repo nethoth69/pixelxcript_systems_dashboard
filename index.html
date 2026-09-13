@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dots — Control Panel</title>
+<meta name="description" content="Personal command center for courses, business tracking, and weekly planning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1115;
+    --panel:#171A21;
+    --panel-alt:#1C202A;
+    --line:#2A2E3A;
+    --text:#E8E6DF;
+    --muted:#8A8F9C;
+    --teal:#4FD1C5;
+    --amber:#E8A33D;
+    --red:#E2665A;
+    --radius:3px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Sora', sans-serif; margin:0; letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+
+  /* ---------- Header ---------- */
+  header.top{
+    border-bottom:1px solid var(--line);
+    padding:28px 0 24px;
+  }
+  .top-row{display:flex; justify-content:space-between; align-items:flex-end; gap:20px; flex-wrap:wrap;}
+  .top-row h1{font-size:1.9rem; font-weight:700;}
+  .top-row .role{color:var(--muted); font-size:0.95rem; margin-top:4px;}
+  .clock{
+    font-family:'IBM Plex Mono', monospace;
+    text-align:right;
+    color:var(--teal);
+    font-size:0.95rem;
+  }
+  .clock .date{color:var(--muted); font-size:0.8rem; display:block; margin-top:2px;}
+
+  /* ---------- Status strip ---------- */
+  .status-strip{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    margin:24px 0;
+  }
+  .status-cell{
+    background:var(--panel);
+    padding:16px 18px;
+  }
+  .status-cell .label{color:var(--muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; font-family:'IBM Plex Mono', monospace;}
+  .status-cell .value{font-family:'IBM Plex Mono', monospace; font-size:1.4rem; font-weight:600; margin-top:6px; color:var(--text);}
+  .status-cell .value.teal{color:var(--teal);}
+  .status-cell .value.amber{color:var(--amber);}
+
+  /* ---------- Grid layout ---------- */
+  .board{
+    display:grid;
+    grid-template-columns: 1.1fr 1.6fr 0.9fr;
+    gap:20px;
+    align-items:start;
+    margin-bottom:40px;
+  }
+  @media (max-width: 980px){
+    .board{grid-template-columns:1fr;}
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+  }
+  .panel-head{
+    padding:16px 18px 12px;
+    border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .panel-head h2{font-size:1.05rem; font-weight:600;}
+  .panel-head .hint{font-size:0.75rem; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+  .panel-body{padding:16px 18px 20px;}
+
+  /* ---------- Links panel ---------- */
+  .link-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px;}
+  .link-list li{border-bottom:1px solid var(--line);}
+  .link-list li:last-child{border-bottom:none;}
+  .link-list a{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:11px 2px; text-decoration:none; color:var(--text); font-size:0.92rem;
+  }
+  .link-list a:hover{color:var(--teal);}
+  .link-list .tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--muted);
+    border:1px solid var(--line); padding:2px 6px; border-radius:2px;
+  }
+
+  /* ---------- Courses panel ---------- */
+  .course-group{margin-bottom:18px;}
+  .course-group:last-child{margin-bottom:0;}
+  .course-group-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+  .course-group-head h3{font-size:0.85rem; font-weight:600; color:var(--text);}
+  .course-group-head .pct{font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--teal);}
+  .bar-track{height:4px; background:var(--line); border-radius:2px; overflow:hidden; margin-bottom:10px;}
+  .bar-fill{height:100%; background:var(--teal); width:0%; transition:width 0.3s ease;}
+  .course-item{display:flex; align-items:flex-start; gap:9px; padding:5px 0; font-size:0.87rem;}
+  .course-item input{margin-top:3px; accent-color:var(--teal); cursor:pointer;}
+  .course-item label{cursor:pointer; flex:1;}
+  .course-item.done label{color:var(--muted); text-decoration:line-through;}
+  .course-item a.ext{color:var(--muted); font-size:0.75rem; margin-left:6px; text-decoration:underline;}
+
+  /* ---------- Goals panel ---------- */
+  .goal-item{padding:10px 0; border-bottom:1px solid var(--line);}
+  .goal-item:last-child{border-bottom:none;}
+  .goal-item .g-label{font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+  .goal-item textarea{
+    width:100%; background:transparent; border:none; color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.9rem; resize:none;
+    padding:4px 0; outline:none;
+  }
+
+  /* ---------- Timetable ---------- */
+  .timetable-wrap{overflow-x:auto;}
+  table.timetable{width:100%; border-collapse:collapse; font-size:0.82rem;}
+  table.timetable th, table.timetable td{
+    border:1px solid var(--line); padding:0; vertical-align:top; min-width:120px;
+  }
+  table.timetable th{
+    background:var(--panel-alt); color:var(--muted); font-family:'IBM Plex Mono', monospace;
+    font-weight:500; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em;
+    padding:9px 8px; text-align:left;
+  }
+  table.timetable td.time-col{
+    background:var(--panel-alt); color:var(--muted); font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem; padding:9px 8px; white-space:nowrap; min-width:70px;
+  }
+  table.timetable textarea{
+    width:100%; min-height:44px; background:transparent; border:none; color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.82rem; resize:vertical; padding:8px;
+    outline:none;
+  }
+  table.timetable textarea:focus{background:rgba(79,209,197,0.06);}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:20px 0 40px;
+    color:var(--muted);
+    font-size:0.8rem;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  .reset-link{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted);
+    background:none; border:1px solid var(--line); padding:5px 10px; border-radius:2px;
+    cursor:pointer;
+  }
+  .reset-link:hover{color:var(--red); border-color:var(--red);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="top-row">
+      <div>
+        <h1>Dots</h1>
+        <div class="role">Developer &amp; Co-founder, Pixelxcript Systems</div>
+      </div>
+      <div class="clock">
+        <span id="clockTime">--:--:--</span>
+        <span class="date" id="clockDate">Loading…</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="status-strip">
+    <div class="status-cell">
+      <div class="label">Courses in progress</div>
+      <div class="value teal" id="statCourses">0</div>
+    </div>
+    <div class="status-cell">
+      <div class="label">Courses completed</div>
+      <div class="value" id="statDone">0</div>
+    </div>
+    <div class="status-cell">
+      <div class="label">Overall progress</div>
+      <div class="value amber" id="statPct">0%</div>
+    </div>
+    <div class="status-cell">
+      <div class="label">Week</div>
+      <div class="value" id="statWeek">—</div>
+    </div>
+  </div>
+
+  <div class="board">
+
+    <!-- Quick Links -->
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Links</h2>
+        <span class="hint">edit in index.html</span>
+      </div>
+      <div class="panel-body">
+        <ul class="link-list">
+          <li><a href="https://nethoth69.github.io/Pixelxcript/" target="_blank" rel="noopener">Pixelxcript Systems site <span class="tag">live</span></a></li>
+          <li><a href="https://github.com/nethoth69/Pixelxcript" target="_blank" rel="noopener">Pixelxcript repo <span class="tag">github</span></a></li>
+          <li><a href="#" target="_blank" rel="noopener">Business Trackers sheet <span class="tag">drive</span></a></li>
+          <li><a href="https://wa.me/233559090526" target="_blank" rel="noopener">WhatsApp Business <span class="tag">0559090526</span></a></li>
+          <li><a href="https://www.netacad.com/" target="_blank" rel="noopener">Cisco Networking Academy <span class="tag">course</span></a></li>
+          <li><a href="https://catalog.hikvisionlearning.com/online-courses.html" target="_blank" rel="noopener">Hikvision Learning <span class="tag">course</span></a></li>
+          <li><a href="https://training.dahuasecurity.com/eLearning" target="_blank" rel="noopener">Dahua Academy <span class="tag">course</span></a></li>
+          <li><a href="https://learndigital.withgoogle.com/digitalgarage/courses" target="_blank" rel="noopener">Google Digital Garage <span class="tag">course</span></a></li>
+          <li><a href="https://academy.hubspot.com/" target="_blank" rel="noopener">HubSpot Academy <span class="tag">course</span></a></li>
+          <li><a href="https://github.com/nethoth69" target="_blank" rel="noopener">GitHub profile <span class="tag">github</span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Course Tracker -->
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Course tracker</h2>
+        <span class="hint">saved locally</span>
+      </div>
+      <div class="panel-body" id="courseContainer">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+    <!-- Goals -->
+    <div class="panel">
+      <div class="panel-head">
+        <h2>This quarter</h2>
+        <span class="hint">saved locally</span>
+      </div>
+      <div class="panel-body" id="goalsContainer">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Timetable -->
+  <div class="panel" style="margin-bottom:40px;">
+    <div class="panel-head">
+      <h2>Weekly timetable</h2>
+      <button class="reset-link" id="resetTimetable">Clear timetable</button>
+    </div>
+    <div class="panel-body timetable-wrap">
+      <table class="timetable" id="timetable">
+        <thead>
+          <tr>
+            <th style="min-width:70px;">Time</th>
+            <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+          </tr>
+        </thead>
+        <tbody id="timetableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    Pixelxcript Systems — personal dashboard. Data is saved in this browser only.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Clock ----------
+  function pad(n){ n = n.toString(); return n.length < 2 ? "0" + n : n; }
+  function tick(){
+    var now = new Date();
+    document.getElementById("clockTime").textContent =
+      pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
+    document.getElementById("clockDate").textContent =
+      now.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+  }
+  try { tick(); setInterval(tick, 1000); } catch(e){ console.error(e); }
+
+  // ISO week number for the status strip
+  function isoWeek(date){
+    var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    var dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  }
+  try { document.getElementById("statWeek").textContent = "W" + isoWeek(new Date()); } catch(e){ console.error(e); }
+
+  // ---------- Course data ----------
+  var courseData = [
+    {
+      group: "Networking & Installation",
+      items: [
+        { id:"net1", label:"Cisco Networking Academy — Networking Basics", href:"https://www.netacad.com/courses/networking-basics" },
+        { id:"net2", label:"CompTIA Network+ study material (free)", href:"" },
+        { id:"net3", label:"Basic electrical safety & wiring fundamentals", href:"" }
+      ]
+    },
+    {
+      group: "CCTV & Access Control",
+      items: [
+        { id:"cctv1", label:"Hikvision Learning — installer courses", href:"https://catalog.hikvisionlearning.com/online-courses.html" },
+        { id:"cctv2", label:"Dahua Academy — e-learning", href:"https://training.dahuasecurity.com/eLearning" },
+        { id:"cctv3", label:"Access control fundamentals", href:"" }
+      ]
+    },
+    {
+      group: "Design & Drawing",
+      items: [
+        { id:"cad1", label:"AutoCAD fundamentals (YouTube / trial)", href:"" },
+        { id:"cad2", label:"Basic architectural drafting principles", href:"" }
+      ]
+    },
+    {
+      group: "Cloud & Software",
+      items: [
+        { id:"cloud1", label:"AWS Cloud Practitioner Essentials", href:"https://explore.skillbuilder.aws/learn/course/external/view/elearning/134/aws-cloud-practitioner-essentials" },
+        { id:"cloud2", label:"Cybersecurity fundamentals", href:"" }
+      ]
+    },
+    {
+      group: "Business",
+      items: [
+        { id:"biz1", label:"Google Digital Garage — fundamentals", href:"https://learndigital.withgoogle.com/digitalgarage/courses" },
+        { id:"biz2", label:"HubSpot Academy — sales & marketing", href:"https://academy.hubspot.com/" },
+        { id:"biz3", label:"Basic bookkeeping / small business accounting", href:"" }
+      ]
+    }
+  ];
+
+  var STORAGE_KEY = "px_dashboard_courses_v1";
+  var GOALS_KEY = "px_dashboard_goals_v1";
+  var TIMETABLE_KEY = "px_dashboard_timetable_v1";
+
+  function loadCourseState(){
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch(e){ return {}; }
+  }
+  function saveCourseState(state){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+  }
+
+  var courseState = loadCourseState();
+
+  function renderCourses(){
+    var container = document.getElementById("courseContainer");
+    container.innerHTML = "";
+    var totalItems = 0, totalDone = 0;
+
+    courseData.forEach(function(group){
+      var groupDone = group.items.filter(function(it){ return courseState[it.id]; }).length;
+      totalItems += group.items.length;
+      totalDone += groupDone;
+      var pct = Math.round((groupDone / group.items.length) * 100);
+
+      var wrap = document.createElement("div");
+      wrap.className = "course-group";
+
+      var head = document.createElement("div");
+      head.className = "course-group-head";
+      head.innerHTML = "<h3>" + group.group + "</h3><span class='pct'>" + groupDone + "/" + group.items.length + "</span>";
+      wrap.appendChild(head);
+
+      var track = document.createElement("div");
+      track.className = "bar-track";
+      var fill = document.createElement("div");
+      fill.className = "bar-fill";
+      fill.style.width = pct + "%";
+      track.appendChild(fill);
+      wrap.appendChild(track);
+
+      group.items.forEach(function(item){
+        var row = document.createElement("div");
+        row.className = "course-item" + (courseState[item.id] ? " done" : "");
+
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = item.id;
+        cb.checked = !!courseState[item.id];
+        cb.addEventListener("change", function(){
+          courseState[item.id] = cb.checked;
+          saveCourseState(courseState);
+          renderCourses();
+          renderStatus();
+        });
+
+        var label = document.createElement("label");
+        label.setAttribute("for", item.id);
+        label.textContent = item.label;
+
+        row.appendChild(cb);
+        row.appendChild(label);
+
+        if (item.href){
+          var link = document.createElement("a");
+          link.className = "ext";
+          link.href = item.href;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.textContent = "open";
+          row.appendChild(link);
+        }
+
+        wrap.appendChild(row);
+      });
+
+      container.appendChild(wrap);
+    });
+
+    return { totalItems: totalItems, totalDone: totalDone };
+  }
+
+  function renderStatus(){
+    var counts = renderCoursesCountOnly();
+    var inProgress = counts.totalDone > 0 && counts.totalDone < counts.totalItems ? 1 : 0;
+    document.getElementById("statDone").textContent = counts.totalDone;
+    document.getElementById("statCourses").textContent = counts.totalItems - counts.totalDone;
+    var pct = counts.totalItems ? Math.round((counts.totalDone / counts.totalItems) * 100) : 0;
+    document.getElementById("statPct").textContent = pct + "%";
+  }
+
+  function renderCoursesCountOnly(){
+    var totalItems = 0, totalDone = 0;
+    courseData.forEach(function(group){
+      totalItems += group.items.length;
+      totalDone += group.items.filter(function(it){ return courseState[it.id]; }).length;
+    });
+    return { totalItems: totalItems, totalDone: totalDone };
+  }
+
+  renderCourses();
+  renderStatus();
+
+  // ---------- Goals ----------
+  var goalDefs = [
+    { id:"g1", label:"Revenue target" },
+    { id:"g2", label:"Jobs to complete" },
+    { id:"g3", label:"Certification to finish" },
+    { id:"g4", label:"One thing to fix in the business" }
+  ];
+
+  function loadGoals(){
+    try { return JSON.parse(localStorage.getItem(GOALS_KEY)) || {}; } catch(e){ return {}; }
+  }
+  function saveGoals(state){
+    try { localStorage.setItem(GOALS_KEY, JSON.stringify(state)); } catch(e){}
+  }
+  var goalState = loadGoals();
+
+  function renderGoals(){
+    var container = document.getElementById("goalsContainer");
+    container.innerHTML = "";
+    goalDefs.forEach(function(g){
+      var wrap = document.createElement("div");
+      wrap.className = "goal-item";
+      var label = document.createElement("div");
+      label.className = "g-label";
+      label.textContent = g.label;
+      var ta = document.createElement("textarea");
+      ta.rows = 2;
+      ta.value = goalState[g.id] || "";
+      ta.placeholder = "—";
+      ta.addEventListener("input", function(){
+        goalState[g.id] = ta.value;
+        saveGoals(goalState);
+      });
+      wrap.appendChild(label);
+      wrap.appendChild(ta);
+      container.appendChild(wrap);
+    });
+  }
+  renderGoals();
+
+  // ---------- Timetable ----------
+  var slots = [
+    "6:00 AM","8:00 AM","10:00 AM","12:00 PM",
+    "2:00 PM","4:00 PM","6:00 PM","8:00 PM"
+  ];
+  var days = ["mon","tue","wed","thu","fri","sat","sun"];
+
+  function loadTimetable(){
+    try { return JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || {}; } catch(e){ return {}; }
+  }
+  function saveTimetable(state){
+    try { localStorage.setItem(TIMETABLE_KEY, JSON.stringify(state)); } catch(e){}
+  }
+  var timetableState = loadTimetable();
+
+  function renderTimetable(){
+    var body = document.getElementById("timetableBody");
+    body.innerHTML = "";
+    slots.forEach(function(slot, rowIdx){
+      var tr = document.createElement("tr");
+      var timeCell = document.createElement("td");
+      timeCell.className = "time-col";
+      timeCell.textContent = slot;
+      tr.appendChild(timeCell);
+
+      days.forEach(function(day){
+        var td = document.createElement("td");
+        var ta = document.createElement("textarea");
+        var key = day + "_" + rowIdx;
+        ta.value = timetableState[key] || "";
+        ta.addEventListener("input", function(){
+          timetableState[key] = ta.value;
+          saveTimetable(timetableState);
+        });
+        td.appendChild(ta);
+        tr.appendChild(td);
+      });
+
+      body.appendChild(tr);
+    });
+  }
+  renderTimetable();
+
+  document.getElementById("resetTimetable").addEventListener("click", function(){
+    if (confirm("Clear the entire timetable? This can't be undone.")){
+      timetableState = {};
+      saveTimetable(timetableState);
+      renderTimetable();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
