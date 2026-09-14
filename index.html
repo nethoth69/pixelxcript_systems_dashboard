@@ -9,65 +9,139 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0F1115;
-    --panel:#171A21;
-    --panel-alt:#1C202A;
-    --line:#2A2E3A;
-    --text:#E8E6DF;
-    --muted:#8A8F9C;
-    --teal:#4FD1C5;
+    /* Brand blues — pulled from the Pixelxcript hexagon logo gradient */
+    --deep-navy:#061224;
+    --mid-blue:#0B2A4A;
+    --logo-blue:#14497A;
+    --sky:#3FCBFF;
     --amber:#E8A33D;
-    --red:#E2665A;
-    --radius:3px;
+
+    /* Glass surfaces */
+    --glass:rgba(255,255,255,0.07);
+    --glass-strong:rgba(255,255,255,0.13);
+    --glass-border:rgba(255,255,255,0.20);
+    --glass-border-soft:rgba(255,255,255,0.12);
+    --inner-hi:rgba(255,255,255,0.16);
+
+    /* Text */
+    --text:#F3F7FC;
+    --muted:rgba(243,247,252,0.62);
+    --muted-2:rgba(243,247,252,0.42);
+
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:8px;
   }
+
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+
   body{
-    background:var(--bg);
     color:var(--text);
     font-family:'IBM Plex Sans', sans-serif;
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    background:
+      radial-gradient(1100px 700px at 8% -10%, rgba(63,203,255,0.28), transparent 60%),
+      radial-gradient(900px 600px at 95% 8%, rgba(232,163,61,0.16), transparent 55%),
+      radial-gradient(1000px 800px at 50% 105%, rgba(20,73,122,0.55), transparent 60%),
+      linear-gradient(160deg, var(--deep-navy) 0%, var(--mid-blue) 55%, var(--logo-blue) 100%);
+    background-attachment:fixed;
+    position:relative;
   }
+
+  /* Soft floating color blobs behind the glass, for depth */
+  body::before, body::after{
+    content:"";
+    position:fixed;
+    border-radius:50%;
+    filter:blur(90px);
+    z-index:0;
+    pointer-events:none;
+  }
+  body::before{
+    width:520px; height:520px;
+    background:rgba(63,203,255,0.22);
+    top:-140px; left:-120px;
+  }
+  body::after{
+    width:480px; height:480px;
+    background:rgba(232,163,61,0.14);
+    bottom:-160px; right:-100px;
+  }
+
   h1,h2,h3{font-family:'Sora', sans-serif; margin:0; letter-spacing:-0.01em;}
   .mono{font-family:'IBM Plex Mono', monospace;}
   a{color:inherit;}
 
-  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px; position:relative; z-index:1;}
+
+  :focus-visible{
+    outline:2px solid var(--sky);
+    outline-offset:2px;
+    border-radius:4px;
+  }
 
   /* ---------- Header ---------- */
   header.top{
-    border-bottom:1px solid var(--line);
-    padding:28px 0 24px;
+    padding:36px 0 26px;
   }
   .top-row{display:flex; justify-content:space-between; align-items:flex-end; gap:20px; flex-wrap:wrap;}
-  .top-row h1{font-size:1.9rem; font-weight:700;}
-  .top-row .role{color:var(--muted); font-size:0.95rem; margin-top:4px;}
+  .brand-block{display:flex; align-items:center; gap:16px;}
+  .brand-logo{width:52px; height:52px; filter:drop-shadow(0 4px 14px rgba(63,203,255,0.35));}
+  .top-row h1{font-size:2.1rem; font-weight:700;}
+  .top-row .role{color:var(--muted); font-size:0.95rem; margin-top:6px;}
   .clock{
     font-family:'IBM Plex Mono', monospace;
     text-align:right;
-    color:var(--teal);
-    font-size:0.95rem;
+    color:var(--sky);
+    font-size:1rem;
+    text-shadow:0 0 18px rgba(63,203,255,0.45);
   }
-  .clock .date{color:var(--muted); font-size:0.8rem; display:block; margin-top:2px;}
+  .clock .date{color:var(--muted); font-size:0.8rem; display:block; margin-top:3px; text-shadow:none;}
+
+  /* ---------- Glass base ---------- */
+  .glass{
+    background:var(--glass);
+    backdrop-filter:blur(20px) saturate(150%);
+    -webkit-backdrop-filter:blur(20px) saturate(150%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius-lg);
+    box-shadow:
+      0 8px 32px rgba(3,10,20,0.35),
+      inset 0 1px 0 var(--inner-hi);
+  }
 
   /* ---------- Status strip ---------- */
   .status-strip{
     display:grid;
-    grid-template-columns:repeat(4, 1fr);
-    gap:1px;
-    background:var(--line);
-    border:1px solid var(--line);
-    margin:24px 0;
+    grid-template-columns:repeat(5, 1fr);
+    gap:14px;
+    margin:26px 0 28px;
+  }
+  @media (max-width: 760px){
+    .status-strip{grid-template-columns:repeat(2, 1fr);}
   }
   .status-cell{
-    background:var(--panel);
+    background:var(--glass-strong);
+    backdrop-filter:blur(20px) saturate(150%);
+    -webkit-backdrop-filter:blur(20px) saturate(150%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius-md);
+    box-shadow:inset 0 1px 0 var(--inner-hi);
     padding:16px 18px;
   }
-  .status-cell .label{color:var(--muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; font-family:'IBM Plex Mono', monospace;}
-  .status-cell .value{font-family:'IBM Plex Mono', monospace; font-size:1.4rem; font-weight:600; margin-top:6px; color:var(--text);}
-  .status-cell .value.teal{color:var(--teal);}
-  .status-cell .value.amber{color:var(--amber);}
+  .status-cell.streak{
+    border-color:rgba(232,163,61,0.45);
+    background:linear-gradient(160deg, rgba(232,163,61,0.16), var(--glass-strong));
+  }
+  .status-cell .label{color:var(--muted); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.07em; font-family:'IBM Plex Mono', monospace;}
+  .status-cell .value{font-family:'IBM Plex Mono', monospace; font-size:1.5rem; font-weight:600; margin-top:6px; color:var(--text); display:flex; align-items:baseline; gap:6px;}
+  .status-cell .value.teal{color:var(--sky); text-shadow:0 0 16px rgba(63,203,255,0.4);}
+  .status-cell .value.amber{color:var(--amber); text-shadow:0 0 16px rgba(232,163,61,0.35);}
+  .status-cell .best{font-size:0.68rem; font-weight:400; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+  .flame{font-size:1.2rem; line-height:1;}
 
   /* ---------- Grid layout ---------- */
   .board{
@@ -75,119 +149,212 @@
     grid-template-columns: 1.1fr 1.6fr 0.9fr;
     gap:20px;
     align-items:start;
-    margin-bottom:40px;
+    margin-bottom:24px;
   }
   @media (max-width: 980px){
     .board{grid-template-columns:1fr;}
   }
 
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-  }
   .panel-head{
-    padding:16px 18px 12px;
-    border-bottom:1px solid var(--line);
+    padding:18px 20px 14px;
+    border-bottom:1px solid var(--glass-border-soft);
     display:flex; justify-content:space-between; align-items:center;
   }
   .panel-head h2{font-size:1.05rem; font-weight:600;}
-  .panel-head .hint{font-size:0.75rem; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
-  .panel-body{padding:16px 18px 20px;}
+  .panel-head .hint{font-size:0.72rem; color:var(--muted-2); font-family:'IBM Plex Mono', monospace;}
+  .panel-body{padding:16px 20px 22px;}
 
   /* ---------- Links panel ---------- */
-  .link-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px;}
-  .link-list li{border-bottom:1px solid var(--line);}
+  .link-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0;}
+  .link-list li{border-bottom:1px solid var(--glass-border-soft);}
   .link-list li:last-child{border-bottom:none;}
   .link-list a{
     display:flex; justify-content:space-between; align-items:center;
-    padding:11px 2px; text-decoration:none; color:var(--text); font-size:0.92rem;
+    padding:12px 2px; text-decoration:none; color:var(--text); font-size:0.92rem;
+    transition:color 0.15s ease;
   }
-  .link-list a:hover{color:var(--teal);}
+  .link-list a:hover{color:var(--sky);}
   .link-list .tag{
-    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--muted);
-    border:1px solid var(--line); padding:2px 6px; border-radius:2px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.66rem; color:var(--muted);
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--glass-border-soft); padding:3px 7px; border-radius:20px;
   }
 
   /* ---------- Courses panel ---------- */
-  .course-group{margin-bottom:18px;}
+  .course-group{margin-bottom:20px;}
   .course-group:last-child{margin-bottom:0;}
-  .course-group-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+  .course-group-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px;}
   .course-group-head h3{font-size:0.85rem; font-weight:600; color:var(--text);}
-  .course-group-head .pct{font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--teal);}
-  .bar-track{height:4px; background:var(--line); border-radius:2px; overflow:hidden; margin-bottom:10px;}
-  .bar-fill{height:100%; background:var(--teal); width:0%; transition:width 0.3s ease;}
+  .course-group-head .pct{font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--sky);}
+  .bar-track{height:5px; background:rgba(255,255,255,0.12); border-radius:20px; overflow:hidden; margin-bottom:11px;}
+  .bar-fill{height:100%; width:0%; border-radius:20px; transition:width 0.3s ease;
+    background:linear-gradient(90deg, var(--sky), var(--amber));}
   .course-item{display:flex; align-items:flex-start; gap:9px; padding:5px 0; font-size:0.87rem;}
-  .course-item input{margin-top:3px; accent-color:var(--teal); cursor:pointer;}
+  .course-item input{margin-top:3px; accent-color:var(--sky); cursor:pointer;}
   .course-item label{cursor:pointer; flex:1;}
-  .course-item.done label{color:var(--muted); text-decoration:line-through;}
+  .course-item.done label{color:var(--muted-2); text-decoration:line-through;}
   .course-item a.ext{color:var(--muted); font-size:0.75rem; margin-left:6px; text-decoration:underline;}
 
   /* ---------- Goals panel ---------- */
-  .goal-item{padding:10px 0; border-bottom:1px solid var(--line);}
+  .goal-item{padding:11px 0; border-bottom:1px solid var(--glass-border-soft);}
   .goal-item:last-child{border-bottom:none;}
-  .goal-item .g-label{font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+  .goal-item .g-label{font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
   .goal-item textarea{
     width:100%; background:transparent; border:none; color:var(--text);
     font-family:'IBM Plex Sans', sans-serif; font-size:0.9rem; resize:none;
-    padding:4px 0; outline:none;
+    padding:5px 0; outline:none;
   }
+  .goal-item textarea::placeholder{color:var(--muted-2);}
 
   /* ---------- Timetable ---------- */
   .timetable-wrap{overflow-x:auto;}
-  table.timetable{width:100%; border-collapse:collapse; font-size:0.82rem;}
+  table.timetable{width:100%; border-collapse:separate; border-spacing:0; font-size:0.82rem;}
   table.timetable th, table.timetable td{
-    border:1px solid var(--line); padding:0; vertical-align:top; min-width:120px;
+    border-bottom:1px solid var(--glass-border-soft);
+    border-right:1px solid var(--glass-border-soft);
+    padding:0; vertical-align:top; min-width:120px;
   }
+  table.timetable th:last-child, table.timetable td:last-child{ border-right:none; }
   table.timetable th{
-    background:var(--panel-alt); color:var(--muted); font-family:'IBM Plex Mono', monospace;
-    font-weight:500; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em;
-    padding:9px 8px; text-align:left;
+    background:rgba(255,255,255,0.05); color:var(--muted); font-family:'IBM Plex Mono', monospace;
+    font-weight:500; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em;
+    padding:10px 8px; text-align:left;
   }
   table.timetable td.time-col{
-    background:var(--panel-alt); color:var(--muted); font-family:'IBM Plex Mono', monospace;
-    font-size:0.72rem; padding:9px 8px; white-space:nowrap; min-width:70px;
+    background:rgba(255,255,255,0.05); color:var(--muted); font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem; padding:10px 8px; white-space:nowrap; min-width:70px;
   }
   table.timetable textarea{
-    width:100%; min-height:44px; background:transparent; border:none; color:var(--text);
-    font-family:'IBM Plex Sans', sans-serif; font-size:0.82rem; resize:vertical; padding:8px;
+    width:100%; min-height:46px; background:transparent; border:none; color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.82rem; resize:vertical; padding:9px 8px;
     outline:none;
   }
-  table.timetable textarea:focus{background:rgba(79,209,197,0.06);}
+  table.timetable textarea:focus{background:rgba(63,203,255,0.08);}
 
   footer{
-    border-top:1px solid var(--line);
-    padding:20px 0 40px;
-    color:var(--muted);
+    padding:22px 0 44px;
+    color:var(--muted-2);
     font-size:0.8rem;
     font-family:'IBM Plex Mono', monospace;
   }
 
   .reset-link{
     font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted);
-    background:none; border:1px solid var(--line); padding:5px 10px; border-radius:2px;
-    cursor:pointer;
+    background:var(--glass); border:1px solid var(--glass-border); padding:6px 12px; border-radius:20px;
+    cursor:pointer; transition:border-color 0.15s ease, color 0.15s ease;
   }
-  .reset-link:hover{color:var(--red); border-color:var(--red);}
+  .reset-link:hover{color:#FF8C7A; border-color:#FF8C7A;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+
+  /* ---------- Login screen ---------- */
+  .login-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .login-card{
+    width:100%;
+    max-width:380px;
+    padding:36px 32px 30px;
+    text-align:center;
+  }
+  .login-logo{width:56px; height:56px; margin-bottom:16px; filter:drop-shadow(0 4px 14px rgba(63,203,255,0.35));}
+  .login-card h1{font-size:1.3rem; margin-bottom:6px;}
+  .login-sub{color:var(--muted); font-size:0.88rem; margin:0 0 22px;}
+  .field-label{
+    display:block; text-align:left; font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--muted); margin:14px 0 6px;
+  }
+  .login-input{
+    width:100%; padding:11px 12px; border-radius:var(--radius-sm);
+    border:1px solid var(--glass-border); background:rgba(255,255,255,0.06);
+    color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:0.92rem;
+    outline:none;
+  }
+  .login-input:focus{border-color:var(--sky); background:rgba(255,255,255,0.09);}
+  .login-btn{
+    width:100%; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--glass-border);
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.92rem; font-weight:500;
+    cursor:pointer; margin-top:18px; transition:transform 0.12s ease, background 0.15s ease;
+  }
+  .login-btn:active{transform:translateY(1px);}
+  .login-btn.primary{
+    background:linear-gradient(90deg, var(--sky), #2E9FD6); color:#04141F; border:none; font-weight:600;
+  }
+  .login-btn.google{
+    background:rgba(255,255,255,0.08); color:var(--text);
+  }
+  .login-btn.google:hover{background:rgba(255,255,255,0.14);}
+  .login-divider{
+    display:flex; align-items:center; gap:12px; margin:18px 0 4px;
+    color:var(--muted-2); font-size:0.75rem; font-family:'IBM Plex Mono', monospace;
+  }
+  .login-divider::before, .login-divider::after{
+    content:""; flex:1; height:1px; background:var(--glass-border-soft);
+  }
+  .login-error{
+    color:#FF8C7A; font-size:0.82rem; margin:16px 0 0; min-height:1em;
+  }
+  .clock-block{display:flex; flex-direction:column; align-items:flex-end;}
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<!-- Login screen -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card glass">
+    <img src="pixelxcript_logo.svg" alt="Pixelxcript Systems logo" class="login-logo">
+    <h1>Dots — Control Panel</h1>
+    <p class="login-sub">Sign in to access your dashboard.</p>
+
+    <form id="loginForm">
+      <label class="field-label" for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" class="login-input" autocomplete="username" required>
+      <label class="field-label" for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" class="login-input" autocomplete="current-password" required>
+      <button type="submit" class="login-btn primary">Sign in</button>
+    </form>
+
+    <div class="login-divider"><span>or</span></div>
+
+    <button id="googleLoginBtn" class="login-btn google">Sign in with Google</button>
+
+    <p id="loginError" class="login-error"></p>
+  </div>
+</div>
+
+<div class="wrap" id="dashboardRoot" style="display:none;">
   <header class="top">
     <div class="top-row">
-      <div>
-        <h1>Dots</h1>
-        <div class="role">Developer &amp; Co-founder, Pixelxcript Systems</div>
+      <div class="brand-block">
+        <img src="pixelxcript_logo.svg" alt="Pixelxcript Systems logo" class="brand-logo">
+        <div>
+          <h1>Dots</h1>
+          <div class="role">Developer &amp; Co-founder, Pixelxcript Systems</div>
+        </div>
       </div>
-      <div class="clock">
-        <span id="clockTime">--:--:--</span>
-        <span class="date" id="clockDate">Loading…</span>
+      <div class="clock-block">
+        <div class="clock">
+          <span id="clockTime">--:--:--</span>
+          <span class="date" id="clockDate">Loading…</span>
+        </div>
+        <button id="logoutBtn" class="reset-link" style="margin-top:8px;">Sign out</button>
       </div>
     </div>
   </header>
 
   <div class="status-strip">
+    <div class="status-cell streak">
+      <div class="label">Day streak</div>
+      <div class="value amber"><span class="flame">🔥</span><span id="statStreak">0</span></div>
+      <div class="best">Best: <span id="statStreakBest">0</span></div>
+    </div>
     <div class="status-cell">
       <div class="label">Courses in progress</div>
       <div class="value teal" id="statCourses">0</div>
@@ -209,7 +376,7 @@
   <div class="board">
 
     <!-- Quick Links -->
-    <div class="panel">
+    <div class="panel glass">
       <div class="panel-head">
         <h2>Links</h2>
         <span class="hint">edit in index.html</span>
@@ -231,10 +398,10 @@
     </div>
 
     <!-- Course Tracker -->
-    <div class="panel">
+    <div class="panel glass">
       <div class="panel-head">
         <h2>Course tracker</h2>
-        <span class="hint">saved locally</span>
+        <span class="hint">synced to your account</span>
       </div>
       <div class="panel-body" id="courseContainer">
         <!-- injected by JS -->
@@ -242,10 +409,10 @@
     </div>
 
     <!-- Goals -->
-    <div class="panel">
+    <div class="panel glass">
       <div class="panel-head">
         <h2>This quarter</h2>
-        <span class="hint">saved locally</span>
+        <span class="hint">synced to your account</span>
       </div>
       <div class="panel-body" id="goalsContainer">
         <!-- injected by JS -->
@@ -255,7 +422,7 @@
   </div>
 
   <!-- Timetable -->
-  <div class="panel" style="margin-bottom:40px;">
+  <div class="panel glass" style="margin-bottom:40px;">
     <div class="panel-head">
       <h2>Weekly timetable</h2>
       <button class="reset-link" id="resetTimetable">Clear timetable</button>
@@ -274,273 +441,395 @@
   </div>
 
   <footer>
-    Pixelxcript Systems — personal dashboard. Data is saved in this browser only.
+    Pixelxcript Systems — personal dashboard. Synced to your account, private to you.
   </footer>
 </div>
 
-<script>
-(function(){
-  "use strict";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,
+  onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-  // ---------- Clock ----------
-  function pad(n){ n = n.toString(); return n.length < 2 ? "0" + n : n; }
-  function tick(){
-    var now = new Date();
-    document.getElementById("clockTime").textContent =
-      pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
-    document.getElementById("clockDate").textContent =
-      now.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+// ---------- Firebase setup ----------
+const firebaseConfig = {
+  apiKey: "AIzaSyBl7R8r_qWHx5FLBVA-ygQmMNIh14vEyXw",
+  authDomain: "dots-dashboard-b6021.firebaseapp.com",
+  projectId: "dots-dashboard-b6021",
+  storageBucket: "dots-dashboard-b6021.firebasestorage.app",
+  messagingSenderId: "301599573481",
+  appId: "1:301599573481:web:eafbd09628ddcf4855b778",
+  measurementId: "G-6GSSPHF9J9"
+};
+
+// Only this email is allowed to use the dashboard, regardless of sign-in method.
+// Edit this to match the email you created in Firebase Authentication.
+const ALLOWED_EMAIL = "pixelxcriptsystems@gmail.com";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUid = null;
+let unsubscribeSnapshot = null;
+
+// ---------- Clock ----------
+function pad(n){ n = n.toString(); return n.length < 2 ? "0" + n : n; }
+function tick(){
+  var now = new Date();
+  document.getElementById("clockTime").textContent =
+    pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
+  document.getElementById("clockDate").textContent =
+    now.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+}
+try { tick(); setInterval(tick, 1000); } catch(e){ console.error(e); }
+
+function isoWeek(date){
+  var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  var dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+try { document.getElementById("statWeek").textContent = "W" + isoWeek(new Date()); } catch(e){ console.error(e); }
+
+// ---------- Course data ----------
+var courseData = [
+  {
+    group: "Networking & Installation",
+    items: [
+      { id:"net1", label:"Cisco Networking Academy — Networking Basics", href:"https://www.netacad.com/courses/networking-basics" },
+      { id:"net2", label:"CompTIA Network+ study material (free)", href:"" },
+      { id:"net3", label:"Basic electrical safety & wiring fundamentals", href:"" }
+    ]
+  },
+  {
+    group: "CCTV & Access Control",
+    items: [
+      { id:"cctv1", label:"Hikvision Learning — installer courses", href:"https://catalog.hikvisionlearning.com/online-courses.html" },
+      { id:"cctv2", label:"Dahua Academy — e-learning", href:"https://training.dahuasecurity.com/eLearning" },
+      { id:"cctv3", label:"Access control fundamentals", href:"" }
+    ]
+  },
+  {
+    group: "Design & Drawing",
+    items: [
+      { id:"cad1", label:"AutoCAD fundamentals (YouTube / trial)", href:"" },
+      { id:"cad2", label:"Basic architectural drafting principles", href:"" }
+    ]
+  },
+  {
+    group: "Cloud & Software",
+    items: [
+      { id:"cloud1", label:"AWS Cloud Practitioner Essentials", href:"https://explore.skillbuilder.aws/learn/course/external/view/elearning/134/aws-cloud-practitioner-essentials" },
+      { id:"cloud2", label:"Cybersecurity fundamentals", href:"" }
+    ]
+  },
+  {
+    group: "Business",
+    items: [
+      { id:"biz1", label:"Google Digital Garage — fundamentals", href:"https://learndigital.withgoogle.com/digitalgarage/courses" },
+      { id:"biz2", label:"HubSpot Academy — sales & marketing", href:"https://academy.hubspot.com/" },
+      { id:"biz3", label:"Basic bookkeeping / small business accounting", href:"" }
+    ]
   }
-  try { tick(); setInterval(tick, 1000); } catch(e){ console.error(e); }
+];
 
-  // ISO week number for the status strip
-  function isoWeek(date){
-    var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    var dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  }
-  try { document.getElementById("statWeek").textContent = "W" + isoWeek(new Date()); } catch(e){ console.error(e); }
+var goalDefs = [
+  { id:"g1", label:"Revenue target" },
+  { id:"g2", label:"Jobs to complete" },
+  { id:"g3", label:"Certification to finish" },
+  { id:"g4", label:"One thing to fix in the business" }
+];
 
-  // ---------- Course data ----------
-  var courseData = [
-    {
-      group: "Networking & Installation",
-      items: [
-        { id:"net1", label:"Cisco Networking Academy — Networking Basics", href:"https://www.netacad.com/courses/networking-basics" },
-        { id:"net2", label:"CompTIA Network+ study material (free)", href:"" },
-        { id:"net3", label:"Basic electrical safety & wiring fundamentals", href:"" }
-      ]
-    },
-    {
-      group: "CCTV & Access Control",
-      items: [
-        { id:"cctv1", label:"Hikvision Learning — installer courses", href:"https://catalog.hikvisionlearning.com/online-courses.html" },
-        { id:"cctv2", label:"Dahua Academy — e-learning", href:"https://training.dahuasecurity.com/eLearning" },
-        { id:"cctv3", label:"Access control fundamentals", href:"" }
-      ]
-    },
-    {
-      group: "Design & Drawing",
-      items: [
-        { id:"cad1", label:"AutoCAD fundamentals (YouTube / trial)", href:"" },
-        { id:"cad2", label:"Basic architectural drafting principles", href:"" }
-      ]
-    },
-    {
-      group: "Cloud & Software",
-      items: [
-        { id:"cloud1", label:"AWS Cloud Practitioner Essentials", href:"https://explore.skillbuilder.aws/learn/course/external/view/elearning/134/aws-cloud-practitioner-essentials" },
-        { id:"cloud2", label:"Cybersecurity fundamentals", href:"" }
-      ]
-    },
-    {
-      group: "Business",
-      items: [
-        { id:"biz1", label:"Google Digital Garage — fundamentals", href:"https://learndigital.withgoogle.com/digitalgarage/courses" },
-        { id:"biz2", label:"HubSpot Academy — sales & marketing", href:"https://academy.hubspot.com/" },
-        { id:"biz3", label:"Basic bookkeeping / small business accounting", href:"" }
-      ]
-    }
-  ];
+var slots = [
+  "6:00 AM","8:00 AM","10:00 AM","12:00 PM",
+  "2:00 PM","4:00 PM","6:00 PM","8:00 PM"
+];
+var days = ["mon","tue","wed","thu","fri","sat","sun"];
 
-  var STORAGE_KEY = "px_dashboard_courses_v1";
-  var GOALS_KEY = "px_dashboard_goals_v1";
-  var TIMETABLE_KEY = "px_dashboard_timetable_v1";
+var courseState = {};
+var goalState = {};
+var timetableState = {};
+var streakState = { count: 0, longest: 0, lastActiveDate: "" };
 
-  function loadCourseState(){
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    } catch(e){ return {}; }
-  }
-  function saveCourseState(state){
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
-  }
+// ---------- Firestore read/write ----------
+function docRef(){
+  return doc(db, "users", currentUid, "state", "dashboard");
+}
 
-  var courseState = loadCourseState();
+async function pushField(field, value){
+  if (!currentUid) return;
+  try {
+    var payload = {};
+    payload[field] = value;
+    await setDoc(docRef(), payload, { merge: true });
+  } catch(e){ console.error("Save failed:", e); }
+}
 
-  function renderCourses(){
-    var container = document.getElementById("courseContainer");
-    container.innerHTML = "";
-    var totalItems = 0, totalDone = 0;
+// Debounce helper for text inputs so we don't write on every keystroke
+function debounce(fn, ms){
+  var t = null;
+  return function(){
+    var args = arguments;
+    clearTimeout(t);
+    t = setTimeout(function(){ fn.apply(null, args); }, ms);
+  };
+}
+var pushGoalsDebounced = debounce(function(){ pushField("goals", goalState); }, 700);
+var pushTimetableDebounced = debounce(function(){ pushField("timetable", timetableState); }, 700);
 
-    courseData.forEach(function(group){
-      var groupDone = group.items.filter(function(it){ return courseState[it.id]; }).length;
-      totalItems += group.items.length;
-      totalDone += groupDone;
-      var pct = Math.round((groupDone / group.items.length) * 100);
+// ---------- Render: Courses ----------
+function renderCourses(){
+  var container = document.getElementById("courseContainer");
+  container.innerHTML = "";
 
-      var wrap = document.createElement("div");
-      wrap.className = "course-group";
+  courseData.forEach(function(group){
+    var groupDone = group.items.filter(function(it){ return courseState[it.id]; }).length;
+    var pct = Math.round((groupDone / group.items.length) * 100);
 
-      var head = document.createElement("div");
-      head.className = "course-group-head";
-      head.innerHTML = "<h3>" + group.group + "</h3><span class='pct'>" + groupDone + "/" + group.items.length + "</span>";
-      wrap.appendChild(head);
+    var wrap = document.createElement("div");
+    wrap.className = "course-group";
 
-      var track = document.createElement("div");
-      track.className = "bar-track";
-      var fill = document.createElement("div");
-      fill.className = "bar-fill";
-      fill.style.width = pct + "%";
-      track.appendChild(fill);
-      wrap.appendChild(track);
+    var head = document.createElement("div");
+    head.className = "course-group-head";
+    head.innerHTML = "<h3>" + group.group + "</h3><span class='pct'>" + groupDone + "/" + group.items.length + "</span>";
+    wrap.appendChild(head);
 
-      group.items.forEach(function(item){
-        var row = document.createElement("div");
-        row.className = "course-item" + (courseState[item.id] ? " done" : "");
+    var track = document.createElement("div");
+    track.className = "bar-track";
+    var fill = document.createElement("div");
+    fill.className = "bar-fill";
+    fill.style.width = pct + "%";
+    track.appendChild(fill);
+    wrap.appendChild(track);
 
-        var cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.id = item.id;
-        cb.checked = !!courseState[item.id];
-        cb.addEventListener("change", function(){
-          courseState[item.id] = cb.checked;
-          saveCourseState(courseState);
-          renderCourses();
-          renderStatus();
-        });
+    group.items.forEach(function(item){
+      var row = document.createElement("div");
+      row.className = "course-item" + (courseState[item.id] ? " done" : "");
 
-        var label = document.createElement("label");
-        label.setAttribute("for", item.id);
-        label.textContent = item.label;
-
-        row.appendChild(cb);
-        row.appendChild(label);
-
-        if (item.href){
-          var link = document.createElement("a");
-          link.className = "ext";
-          link.href = item.href;
-          link.target = "_blank";
-          link.rel = "noopener";
-          link.textContent = "open";
-          row.appendChild(link);
-        }
-
-        wrap.appendChild(row);
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = item.id;
+      cb.checked = !!courseState[item.id];
+      cb.addEventListener("change", function(){
+        courseState[item.id] = cb.checked;
+        pushField("courses", courseState);
+        renderCourses();
+        renderStatus();
       });
 
-      container.appendChild(wrap);
+      var label = document.createElement("label");
+      label.setAttribute("for", item.id);
+      label.textContent = item.label;
+
+      row.appendChild(cb);
+      row.appendChild(label);
+
+      if (item.href){
+        var link = document.createElement("a");
+        link.className = "ext";
+        link.href = item.href;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = "open";
+        row.appendChild(link);
+      }
+
+      wrap.appendChild(row);
     });
 
-    return { totalItems: totalItems, totalDone: totalDone };
-  }
+    container.appendChild(wrap);
+  });
+}
 
-  function renderStatus(){
-    var counts = renderCoursesCountOnly();
-    var inProgress = counts.totalDone > 0 && counts.totalDone < counts.totalItems ? 1 : 0;
-    document.getElementById("statDone").textContent = counts.totalDone;
-    document.getElementById("statCourses").textContent = counts.totalItems - counts.totalDone;
-    var pct = counts.totalItems ? Math.round((counts.totalDone / counts.totalItems) * 100) : 0;
-    document.getElementById("statPct").textContent = pct + "%";
-  }
+function renderStatus(){
+  var totalItems = 0, totalDone = 0;
+  courseData.forEach(function(group){
+    totalItems += group.items.length;
+    totalDone += group.items.filter(function(it){ return courseState[it.id]; }).length;
+  });
+  document.getElementById("statDone").textContent = totalDone;
+  document.getElementById("statCourses").textContent = totalItems - totalDone;
+  var pct = totalItems ? Math.round((totalDone / totalItems) * 100) : 0;
+  document.getElementById("statPct").textContent = pct + "%";
+}
 
-  function renderCoursesCountOnly(){
-    var totalItems = 0, totalDone = 0;
-    courseData.forEach(function(group){
-      totalItems += group.items.length;
-      totalDone += group.items.filter(function(it){ return courseState[it.id]; }).length;
+// ---------- Render: Goals ----------
+function renderGoals(){
+  var container = document.getElementById("goalsContainer");
+  container.innerHTML = "";
+  goalDefs.forEach(function(g){
+    var wrap = document.createElement("div");
+    wrap.className = "goal-item";
+    var label = document.createElement("div");
+    label.className = "g-label";
+    label.textContent = g.label;
+    var ta = document.createElement("textarea");
+    ta.rows = 2;
+    ta.value = goalState[g.id] || "";
+    ta.placeholder = "—";
+    ta.addEventListener("input", function(){
+      goalState[g.id] = ta.value;
+      pushGoalsDebounced();
     });
-    return { totalItems: totalItems, totalDone: totalDone };
-  }
+    wrap.appendChild(label);
+    wrap.appendChild(ta);
+    container.appendChild(wrap);
+  });
+}
 
+// ---------- Render: Timetable ----------
+function renderTimetable(){
+  var body = document.getElementById("timetableBody");
+  body.innerHTML = "";
+  slots.forEach(function(slot, rowIdx){
+    var tr = document.createElement("tr");
+    var timeCell = document.createElement("td");
+    timeCell.className = "time-col";
+    timeCell.textContent = slot;
+    tr.appendChild(timeCell);
+
+    days.forEach(function(day){
+      var td = document.createElement("td");
+      var ta = document.createElement("textarea");
+      var key = day + "_" + rowIdx;
+      ta.value = timetableState[key] || "";
+      ta.addEventListener("input", function(){
+        timetableState[key] = ta.value;
+        pushTimetableDebounced();
+      });
+      td.appendChild(ta);
+      tr.appendChild(td);
+    });
+
+    body.appendChild(tr);
+  });
+}
+
+document.getElementById("resetTimetable").addEventListener("click", function(){
+  if (confirm("Clear the entire timetable? This can't be undone.")){
+    timetableState = {};
+    pushField("timetable", timetableState);
+    renderTimetable();
+  }
+});
+
+function renderAll(){
   renderCourses();
   renderStatus();
-
-  // ---------- Goals ----------
-  var goalDefs = [
-    { id:"g1", label:"Revenue target" },
-    { id:"g2", label:"Jobs to complete" },
-    { id:"g3", label:"Certification to finish" },
-    { id:"g4", label:"One thing to fix in the business" }
-  ];
-
-  function loadGoals(){
-    try { return JSON.parse(localStorage.getItem(GOALS_KEY)) || {}; } catch(e){ return {}; }
-  }
-  function saveGoals(state){
-    try { localStorage.setItem(GOALS_KEY, JSON.stringify(state)); } catch(e){}
-  }
-  var goalState = loadGoals();
-
-  function renderGoals(){
-    var container = document.getElementById("goalsContainer");
-    container.innerHTML = "";
-    goalDefs.forEach(function(g){
-      var wrap = document.createElement("div");
-      wrap.className = "goal-item";
-      var label = document.createElement("div");
-      label.className = "g-label";
-      label.textContent = g.label;
-      var ta = document.createElement("textarea");
-      ta.rows = 2;
-      ta.value = goalState[g.id] || "";
-      ta.placeholder = "—";
-      ta.addEventListener("input", function(){
-        goalState[g.id] = ta.value;
-        saveGoals(goalState);
-      });
-      wrap.appendChild(label);
-      wrap.appendChild(ta);
-      container.appendChild(wrap);
-    });
-  }
   renderGoals();
-
-  // ---------- Timetable ----------
-  var slots = [
-    "6:00 AM","8:00 AM","10:00 AM","12:00 PM",
-    "2:00 PM","4:00 PM","6:00 PM","8:00 PM"
-  ];
-  var days = ["mon","tue","wed","thu","fri","sat","sun"];
-
-  function loadTimetable(){
-    try { return JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || {}; } catch(e){ return {}; }
-  }
-  function saveTimetable(state){
-    try { localStorage.setItem(TIMETABLE_KEY, JSON.stringify(state)); } catch(e){}
-  }
-  var timetableState = loadTimetable();
-
-  function renderTimetable(){
-    var body = document.getElementById("timetableBody");
-    body.innerHTML = "";
-    slots.forEach(function(slot, rowIdx){
-      var tr = document.createElement("tr");
-      var timeCell = document.createElement("td");
-      timeCell.className = "time-col";
-      timeCell.textContent = slot;
-      tr.appendChild(timeCell);
-
-      days.forEach(function(day){
-        var td = document.createElement("td");
-        var ta = document.createElement("textarea");
-        var key = day + "_" + rowIdx;
-        ta.value = timetableState[key] || "";
-        ta.addEventListener("input", function(){
-          timetableState[key] = ta.value;
-          saveTimetable(timetableState);
-        });
-        td.appendChild(ta);
-        tr.appendChild(td);
-      });
-
-      body.appendChild(tr);
-    });
-  }
   renderTimetable();
+  renderStreak();
+}
 
-  document.getElementById("resetTimetable").addEventListener("click", function(){
-    if (confirm("Clear the entire timetable? This can't be undone.")){
-      timetableState = {};
-      saveTimetable(timetableState);
-      renderTimetable();
-    }
+// ---------- Streak ----------
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+}
+
+function daysBetween(a, b){
+  var da = new Date(a + "T00:00:00");
+  var db = new Date(b + "T00:00:00");
+  return Math.round((db - da) / 86400000);
+}
+
+function renderStreak(){
+  document.getElementById("statStreak").textContent = streakState.count || 0;
+  document.getElementById("statStreakBest").textContent = streakState.longest || 0;
+}
+
+// Called once per snapshot load — updates the streak if today hasn't been counted yet.
+function updateStreakIfNeeded(){
+  var today = todayStr();
+  if (streakState.lastActiveDate === today){
+    return; // already counted today, nothing to do
+  }
+
+  var newCount;
+  if (streakState.lastActiveDate && daysBetween(streakState.lastActiveDate, today) === 1){
+    newCount = (streakState.count || 0) + 1; // consecutive day
+  } else {
+    newCount = 1; // gap of 2+ days, or first ever visit
+  }
+
+  streakState = {
+    count: newCount,
+    longest: Math.max(newCount, streakState.longest || 0),
+    lastActiveDate: today
+  };
+
+  renderStreak();
+  pushField("streak", streakState);
+}
+
+// ---------- Auth flow ----------
+var loginScreen = document.getElementById("loginScreen");
+var dashboardRoot = document.getElementById("dashboardRoot");
+var loginError = document.getElementById("loginError");
+
+function showError(msg){
+  loginError.textContent = msg;
+}
+
+document.getElementById("loginForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  showError("");
+  var email = document.getElementById("loginEmail").value.trim();
+  var password = document.getElementById("loginPassword").value;
+  signInWithEmailAndPassword(auth, email, password).catch(function(err){
+    showError(err.message.replace("Firebase: ", ""));
   });
+});
 
-})();
+document.getElementById("googleLoginBtn").addEventListener("click", function(){
+  showError("");
+  signInWithPopup(auth, new GoogleAuthProvider()).catch(function(err){
+    showError(err.message.replace("Firebase: ", ""));
+  });
+});
+
+document.getElementById("logoutBtn").addEventListener("click", function(){
+  signOut(auth);
+});
+
+onAuthStateChanged(auth, function(user){
+  if (unsubscribeSnapshot){ unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+
+  if (!user){
+    currentUid = null;
+    loginScreen.style.display = "flex";
+    dashboardRoot.style.display = "none";
+    return;
+  }
+
+  if ((user.email || "").toLowerCase() !== ALLOWED_EMAIL.toLowerCase()){
+    showError("This account isn't authorized for this dashboard.");
+    signOut(auth);
+    return;
+  }
+
+  currentUid = user.uid;
+  loginScreen.style.display = "none";
+  dashboardRoot.style.display = "block";
+
+  unsubscribeSnapshot = onSnapshot(docRef(), function(snap){
+    var data = snap.exists() ? snap.data() : {};
+    courseState = data.courses || {};
+    goalState = data.goals || {};
+    timetableState = data.timetable || {};
+    streakState = data.streak || { count: 0, longest: 0, lastActiveDate: "" };
+    renderAll();
+    updateStreakIfNeeded();
+  }, function(err){
+    console.error("Sync error:", err);
+  });
+});
 </script>
 </body>
 </html>
