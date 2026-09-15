@@ -181,19 +181,29 @@
   }
 
   /* ---------- Courses panel ---------- */
-  .course-group{margin-bottom:20px;}
-  .course-group:last-child{margin-bottom:0;}
-  .course-group-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px;}
+  .course-group{margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid var(--glass-border-soft);}
+  .course-group:last-child{margin-bottom:0; padding-bottom:0; border-bottom:none;}
+  .course-group.locked{opacity:0.5;}
+  .course-group-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;}
   .course-group-head h3{font-size:0.85rem; font-weight:600; color:var(--text);}
   .course-group-head .pct{font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--sky);}
+  .tier-meta{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--muted-2); margin-bottom:9px;}
+  .tier-locked-msg{font-size:0.76rem; color:var(--muted-2); font-style:italic; margin:2px 0 8px;}
   .bar-track{height:5px; background:rgba(255,255,255,0.12); border-radius:20px; overflow:hidden; margin-bottom:11px;}
   .bar-fill{height:100%; width:0%; border-radius:20px; transition:width 0.3s ease;
     background:linear-gradient(90deg, var(--sky), var(--amber));}
   .course-item{display:flex; align-items:flex-start; gap:9px; padding:5px 0; font-size:0.87rem;}
   .course-item input{margin-top:3px; accent-color:var(--sky); cursor:pointer;}
+  .course-item input:disabled{cursor:not-allowed;}
   .course-item label{cursor:pointer; flex:1;}
+  .course-item.locked label{cursor:not-allowed;}
   .course-item.done label{color:var(--muted-2); text-decoration:line-through;}
   .course-item a.ext{color:var(--muted); font-size:0.75rem; margin-left:6px; text-decoration:underline;}
+  .hours-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.66rem; color:var(--muted);
+    background:rgba(255,255,255,0.06); border:1px solid var(--glass-border-soft);
+    padding:2px 6px; border-radius:20px; white-space:nowrap;
+  }
 
   /* ---------- Goals panel ---------- */
   .goal-item{padding:11px 0; border-bottom:1px solid var(--glass-border-soft);}
@@ -498,43 +508,50 @@ function isoWeek(date){
 try { document.getElementById("statWeek").textContent = "W" + isoWeek(new Date()); } catch(e){ console.error(e); }
 
 // ---------- Course data ----------
+// A sequential path, beginner to mastery — each tier unlocks once the previous
+// tier is fully checked off. Hours are estimates for planning at 3 hrs/day.
 var courseData = [
   {
-    group: "Networking & Installation",
+    group: "Tier 1 — Foundations",
+    days: 9,
     items: [
-      { id:"net1", label:"Cisco Networking Academy — Networking Basics", href:"https://www.netacad.com/courses/networking-basics" },
-      { id:"net2", label:"CompTIA Network+ study material (free)", href:"" },
-      { id:"net3", label:"Basic electrical safety & wiring fundamentals", href:"" }
+      { id:"net3", label:"Basic electrical safety & wiring fundamentals", href:"", hours:6 },
+      { id:"net1", label:"Cisco Networking Academy — Networking Basics", href:"https://www.netacad.com/courses/networking-basics", hours:20 }
     ]
   },
   {
-    group: "CCTV & Access Control",
+    group: "Tier 2 — Core Commercial Skill",
+    days: 25,
     items: [
-      { id:"cctv1", label:"Hikvision Learning — installer courses", href:"https://catalog.hikvisionlearning.com/online-courses.html" },
-      { id:"cctv2", label:"Dahua Academy — e-learning", href:"https://training.dahuasecurity.com/eLearning" },
-      { id:"cctv3", label:"Access control fundamentals", href:"" }
+      { id:"net2", label:"CompTIA Network+ study material (free)", href:"", hours:40 },
+      { id:"cctv3", label:"Access control fundamentals", href:"", hours:8 },
+      { id:"cctv1", label:"Hikvision Learning — installer courses", href:"https://catalog.hikvisionlearning.com/online-courses.html", hours:15 },
+      { id:"cctv2", label:"Dahua Academy — e-learning", href:"https://training.dahuasecurity.com/eLearning", hours:12 }
     ]
   },
   {
-    group: "Design & Drawing",
+    group: "Tier 3 — Business Operations",
+    days: 12,
     items: [
-      { id:"cad1", label:"AutoCAD fundamentals (YouTube / trial)", href:"" },
-      { id:"cad2", label:"Basic architectural drafting principles", href:"" }
+      { id:"biz1", label:"Google Digital Garage — fundamentals", href:"https://learndigital.withgoogle.com/digitalgarage/courses", hours:15 },
+      { id:"biz3", label:"Basic bookkeeping / small business accounting", href:"", hours:10 },
+      { id:"biz2", label:"HubSpot Academy — sales & marketing", href:"https://academy.hubspot.com/", hours:10 }
     ]
   },
   {
-    group: "Cloud & Software",
+    group: "Tier 4 — Design Capability",
+    days: 12,
     items: [
-      { id:"cloud1", label:"AWS Cloud Practitioner Essentials", href:"https://explore.skillbuilder.aws/learn/course/external/view/elearning/134/aws-cloud-practitioner-essentials" },
-      { id:"cloud2", label:"Cybersecurity fundamentals", href:"" }
+      { id:"cad1", label:"AutoCAD fundamentals (YouTube / trial)", href:"", hours:20 },
+      { id:"cad2", label:"Basic architectural drafting principles", href:"", hours:15 }
     ]
   },
   {
-    group: "Business",
+    group: "Tier 5 — Advanced / Software Integration",
+    days: 10,
     items: [
-      { id:"biz1", label:"Google Digital Garage — fundamentals", href:"https://learndigital.withgoogle.com/digitalgarage/courses" },
-      { id:"biz2", label:"HubSpot Academy — sales & marketing", href:"https://academy.hubspot.com/" },
-      { id:"biz3", label:"Basic bookkeeping / small business accounting", href:"" }
+      { id:"cloud1", label:"AWS Cloud Practitioner Essentials", href:"https://explore.skillbuilder.aws/learn/course/external/view/elearning/134/aws-cloud-practitioner-essentials", hours:15 },
+      { id:"cloud2", label:"Cybersecurity fundamentals", href:"", hours:15 }
     ]
   }
 ];
@@ -584,21 +601,36 @@ var pushGoalsDebounced = debounce(function(){ pushField("goals", goalState); }, 
 var pushTimetableDebounced = debounce(function(){ pushField("timetable", timetableState); }, 700);
 
 // ---------- Render: Courses ----------
+function isTierComplete(group){
+  return group.items.every(function(it){ return courseState[it.id]; });
+}
+
 function renderCourses(){
   var container = document.getElementById("courseContainer");
   container.innerHTML = "";
 
-  courseData.forEach(function(group){
+  var priorComplete = true; // Tier 1 is always unlocked
+
+  courseData.forEach(function(group, idx){
+    var locked = !priorComplete;
     var groupDone = group.items.filter(function(it){ return courseState[it.id]; }).length;
     var pct = Math.round((groupDone / group.items.length) * 100);
+    var totalHours = group.items.reduce(function(sum, it){ return sum + (it.hours || 0); }, 0);
 
     var wrap = document.createElement("div");
-    wrap.className = "course-group";
+    wrap.className = "course-group" + (locked ? " locked" : "");
 
     var head = document.createElement("div");
     head.className = "course-group-head";
-    head.innerHTML = "<h3>" + group.group + "</h3><span class='pct'>" + groupDone + "/" + group.items.length + "</span>";
+    head.innerHTML =
+      "<h3>" + (locked ? "🔒 " : "") + group.group + "</h3>" +
+      "<span class='pct'>" + groupDone + "/" + group.items.length + "</span>";
     wrap.appendChild(head);
+
+    var meta = document.createElement("div");
+    meta.className = "tier-meta";
+    meta.textContent = totalHours + "h total · ~" + group.days + " days at 3 hrs/day";
+    wrap.appendChild(meta);
 
     var track = document.createElement("div");
     track.className = "bar-track";
@@ -608,14 +640,22 @@ function renderCourses(){
     track.appendChild(fill);
     wrap.appendChild(track);
 
+    if (locked){
+      var lockedMsg = document.createElement("div");
+      lockedMsg.className = "tier-locked-msg";
+      lockedMsg.textContent = "Finish the tier above to unlock this one.";
+      wrap.appendChild(lockedMsg);
+    }
+
     group.items.forEach(function(item){
       var row = document.createElement("div");
-      row.className = "course-item" + (courseState[item.id] ? " done" : "");
+      row.className = "course-item" + (courseState[item.id] ? " done" : "") + (locked ? " locked" : "");
 
       var cb = document.createElement("input");
       cb.type = "checkbox";
       cb.id = item.id;
       cb.checked = !!courseState[item.id];
+      cb.disabled = locked;
       cb.addEventListener("change", function(){
         courseState[item.id] = cb.checked;
         pushField("courses", courseState);
@@ -627,10 +667,15 @@ function renderCourses(){
       label.setAttribute("for", item.id);
       label.textContent = item.label;
 
+      var hoursTag = document.createElement("span");
+      hoursTag.className = "hours-tag";
+      hoursTag.textContent = item.hours + "h";
+
       row.appendChild(cb);
       row.appendChild(label);
+      row.appendChild(hoursTag);
 
-      if (item.href){
+      if (item.href && !locked){
         var link = document.createElement("a");
         link.className = "ext";
         link.href = item.href;
@@ -644,6 +689,8 @@ function renderCourses(){
     });
 
     container.appendChild(wrap);
+
+    priorComplete = priorComplete && isTierComplete(group);
   });
 }
 
