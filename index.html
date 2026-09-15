@@ -311,6 +311,15 @@
   .login-error{
     color:#FF8C7A; font-size:0.82rem; margin:16px 0 0; min-height:1em;
   }
+  .toggle-mode{
+    font-size:0.85rem; color:var(--muted); margin:16px 0 0;
+  }
+  .link-btn{
+    background:none; border:none; color:var(--sky); font-family:'IBM Plex Sans', sans-serif;
+    font-size:0.85rem; font-weight:500; cursor:pointer; padding:0; margin-left:4px;
+    text-decoration:underline;
+  }
+  .link-btn:hover{color:var(--text);}
   .clock-block{display:flex; flex-direction:column; align-items:flex-end;}
 </style>
 </head>
@@ -321,15 +330,20 @@
   <div class="login-card glass">
     <img src="pixelxcript_logo.svg" alt="Pixelxcript Systems logo" class="login-logo">
     <h1>Dots — Control Panel</h1>
-    <p class="login-sub">Sign in to access your dashboard.</p>
+    <p class="login-sub" id="loginSub">Sign in to access your dashboard.</p>
 
     <form id="loginForm">
       <label class="field-label" for="loginEmail">Email</label>
       <input type="email" id="loginEmail" class="login-input" autocomplete="username" required>
       <label class="field-label" for="loginPassword">Password</label>
       <input type="password" id="loginPassword" class="login-input" autocomplete="current-password" required>
-      <button type="submit" class="login-btn primary">Sign in</button>
+      <button type="submit" class="login-btn primary" id="submitBtn">Sign in</button>
     </form>
+
+    <p class="toggle-mode">
+      <span id="toggleModeText">Don't have an account?</span>
+      <button type="button" id="toggleModeBtn" class="link-btn">Sign up</button>
+    </p>
 
     <div class="login-divider"><span>or</span></div>
 
@@ -458,8 +472,8 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {
-  getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,
-  onAuthStateChanged, signOut
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, onSnapshot
@@ -476,9 +490,17 @@ const firebaseConfig = {
   measurementId: "G-6GSSPHF9J9"
 };
 
-// Only this email is allowed to use the dashboard, regardless of sign-in method.
-// Edit this to match the email you created in Firebase Authentication.
-const ALLOWED_EMAIL = "nethoth69@gmail.com";
+// Only these emails can use the dashboard, regardless of sign-in method.
+// Add any other email you personally use to this list.
+const ALLOWED_EMAILS = [
+  "nethoth69@gmail.com",
+  "pixelxcriptsystems@gmail.com",
+  "pixelxcript@gmail.com"
+];
+function isAllowedEmail(email){
+  return ALLOWED_EMAILS.map(function(e){ return e.toLowerCase(); })
+    .indexOf((email || "").toLowerCase()) !== -1;
+}
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -819,17 +841,53 @@ function updateStreakIfNeeded(){
 var loginScreen = document.getElementById("loginScreen");
 var dashboardRoot = document.getElementById("dashboardRoot");
 var loginError = document.getElementById("loginError");
+var submitBtn = document.getElementById("submitBtn");
+var loginSub = document.getElementById("loginSub");
+var toggleModeText = document.getElementById("toggleModeText");
+var toggleModeBtn = document.getElementById("toggleModeBtn");
+
+var isSignUpMode = false;
 
 function showError(msg){
   loginError.textContent = msg;
 }
+
+function setMode(signUp){
+  isSignUpMode = signUp;
+  showError("");
+  if (signUp){
+    submitBtn.textContent = "Create account";
+    loginSub.textContent = "Create an account to access your dashboard.";
+    toggleModeText.textContent = "Already have an account?";
+    toggleModeBtn.textContent = "Sign in";
+  } else {
+    submitBtn.textContent = "Sign in";
+    loginSub.textContent = "Sign in to access your dashboard.";
+    toggleModeText.textContent = "Don't have an account?";
+    toggleModeBtn.textContent = "Sign up";
+  }
+}
+
+toggleModeBtn.addEventListener("click", function(){
+  setMode(!isSignUpMode);
+});
 
 document.getElementById("loginForm").addEventListener("submit", function(e){
   e.preventDefault();
   showError("");
   var email = document.getElementById("loginEmail").value.trim();
   var password = document.getElementById("loginPassword").value;
-  signInWithEmailAndPassword(auth, email, password).catch(function(err){
+
+  if (!isAllowedEmail(email)){
+    showError("This email isn't authorized for this dashboard.");
+    return;
+  }
+
+  var action = isSignUpMode
+    ? createUserWithEmailAndPassword(auth, email, password)
+    : signInWithEmailAndPassword(auth, email, password);
+
+  action.catch(function(err){
     showError(err.message.replace("Firebase: ", ""));
   });
 });
@@ -855,7 +913,7 @@ onAuthStateChanged(auth, function(user){
     return;
   }
 
-  if ((user.email || "").toLowerCase() !== ALLOWED_EMAIL.toLowerCase()){
+  if (!isAllowedEmail(user.email)){
     showError("This account isn't authorized for this dashboard.");
     signOut(auth);
     return;
