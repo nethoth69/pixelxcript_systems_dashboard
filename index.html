@@ -16,17 +16,17 @@
     --sky:#3FCBFF;
     --amber:#E8A33D;
 
-    /* Glass surfaces */
-    --glass:rgba(255,255,255,0.07);
-    --glass-strong:rgba(255,255,255,0.13);
-    --glass-border:rgba(255,255,255,0.20);
-    --glass-border-soft:rgba(255,255,255,0.12);
-    --inner-hi:rgba(255,255,255,0.16);
+    /* Glass surfaces — more opaque than a typical glass effect, for legibility */
+    --glass:rgba(10,22,38,0.62);
+    --glass-strong:rgba(12,28,48,0.72);
+    --glass-border:rgba(255,255,255,0.16);
+    --glass-border-soft:rgba(255,255,255,0.10);
+    --inner-hi:rgba(255,255,255,0.10);
 
-    /* Text */
-    --text:#F3F7FC;
-    --muted:rgba(243,247,252,0.62);
-    --muted-2:rgba(243,247,252,0.42);
+    /* Text — higher-contrast than a typical glass theme */
+    --text:#FFFFFF;
+    --muted:rgba(255,255,255,0.78);
+    --muted-2:rgba(255,255,255,0.58);
 
     --radius-lg:20px;
     --radius-md:14px;
@@ -39,35 +39,35 @@
   body{
     color:var(--text);
     font-family:'IBM Plex Sans', sans-serif;
-    line-height:1.5;
+    line-height:1.55;
     -webkit-font-smoothing:antialiased;
     min-height:100vh;
     background:
-      radial-gradient(1100px 700px at 8% -10%, rgba(63,203,255,0.28), transparent 60%),
-      radial-gradient(900px 600px at 95% 8%, rgba(232,163,61,0.16), transparent 55%),
-      radial-gradient(1000px 800px at 50% 105%, rgba(20,73,122,0.55), transparent 60%),
+      radial-gradient(1100px 700px at 8% -10%, rgba(63,203,255,0.14), transparent 60%),
+      radial-gradient(900px 600px at 95% 8%, rgba(232,163,61,0.08), transparent 55%),
+      radial-gradient(1000px 800px at 50% 105%, rgba(20,73,122,0.40), transparent 60%),
       linear-gradient(160deg, var(--deep-navy) 0%, var(--mid-blue) 55%, var(--logo-blue) 100%);
     background-attachment:fixed;
     position:relative;
   }
 
-  /* Soft floating color blobs behind the glass, for depth */
+  /* Soft floating color blobs behind the glass, for depth — kept subtle so panel text stays legible */
   body::before, body::after{
     content:"";
     position:fixed;
     border-radius:50%;
-    filter:blur(90px);
+    filter:blur(110px);
     z-index:0;
     pointer-events:none;
   }
   body::before{
     width:520px; height:520px;
-    background:rgba(63,203,255,0.22);
+    background:rgba(63,203,255,0.12);
     top:-140px; left:-120px;
   }
   body::after{
     width:480px; height:480px;
-    background:rgba(232,163,61,0.14);
+    background:rgba(232,163,61,0.08);
     bottom:-160px; right:-100px;
   }
 
@@ -170,12 +170,12 @@
   .link-list li:last-child{border-bottom:none;}
   .link-list a{
     display:flex; justify-content:space-between; align-items:center;
-    padding:12px 2px; text-decoration:none; color:var(--text); font-size:0.92rem;
+    padding:12px 2px; text-decoration:none; color:var(--text); font-size:0.95rem;
     transition:color 0.15s ease;
   }
   .link-list a:hover{color:var(--sky);}
   .link-list .tag{
-    font-family:'IBM Plex Mono', monospace; font-size:0.66rem; color:var(--muted);
+    font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--muted);
     background:rgba(255,255,255,0.06);
     border:1px solid var(--glass-border-soft); padding:3px 7px; border-radius:20px;
   }
@@ -192,7 +192,7 @@
   .bar-track{height:5px; background:rgba(255,255,255,0.12); border-radius:20px; overflow:hidden; margin-bottom:11px;}
   .bar-fill{height:100%; width:0%; border-radius:20px; transition:width 0.3s ease;
     background:linear-gradient(90deg, var(--sky), var(--amber));}
-  .course-item{display:flex; align-items:flex-start; gap:9px; padding:5px 0; font-size:0.87rem;}
+  .course-item{display:flex; align-items:flex-start; gap:9px; padding:6px 0; font-size:0.92rem;}
   .course-item input{margin-top:3px; accent-color:var(--sky); cursor:pointer;}
   .course-item input:disabled{cursor:not-allowed;}
   .course-item label{cursor:pointer; flex:1;}
@@ -200,7 +200,7 @@
   .course-item.done label{color:var(--muted-2); text-decoration:line-through;}
   .course-item a.ext{color:var(--muted); font-size:0.75rem; margin-left:6px; text-decoration:underline;}
   .hours-tag{
-    font-family:'IBM Plex Mono', monospace; font-size:0.66rem; color:var(--muted);
+    font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--muted);
     background:rgba(255,255,255,0.06); border:1px solid var(--glass-border-soft);
     padding:2px 6px; border-radius:20px; white-space:nowrap;
   }
